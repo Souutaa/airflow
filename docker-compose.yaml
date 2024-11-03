@@ -49,15 +49,16 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.9.2}
+  # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.9.2}
   # build: .
+  build: .
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    # AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
@@ -80,6 +81,7 @@ x-airflow-common:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
+
 
 services:
   postgres:
@@ -114,6 +116,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    
+
 
   airflow-scheduler:
     <<: *airflow-common
@@ -129,6 +133,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+
 
 
   airflow-init:
@@ -191,7 +196,7 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
-    user: "0:0"
+    # user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
 
@@ -208,6 +213,7 @@ services:
       - -c
       - airflow
 
+
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
   # See: https://docs.docker.com/compose/profiles/
@@ -217,7 +223,7 @@ services:
     container_name: mysql
     volumes:
       - mysql_h:/var/lib/mysql
-      - ./dataset:/tmp/dataset
+      - ./dataset:/tmp/dataset  #mount volume dataset
       - ./load_dataset_into_mysql:/tmp/load_dataset
     ports:
       - "3307:3306"
@@ -241,9 +247,9 @@ services:
       # - ./load_dataset:/tmp/load_dataset
     command: ["postgres", "-c", "hba_file=/tmp/pg_hba.conf"]
     expose:
-      - "5432"
+      - "5433"
     ports:
-      - "5432:5432"
+      - "5433:5432"
     env_file: .env
     networks:
       - data_network
