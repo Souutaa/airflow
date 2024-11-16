@@ -254,6 +254,18 @@ services:
     networks:
       - data_network
 
+  git-sync:
+    image: databurst/git-sync:latest
+    volumes:
+      - ./dags:${DESTINATION_PATH:-/app/sync}
+      - ${GIT_SSH_KEY:-~/.ssh/id_rsa}:/root/.ssh/id_rsa
+    environment:
+      REPO_URL: ${REPO_URL:-git@github.com:nguyenthanhhungDE/Build-data-warehouse-with-Airflow-Python-for-E-commerce.git}
+      GIT_BRANCH: ${GIT_BRANCH:-main}
+      DIRECTORY_NAME: ${DIRECTORY_NAME:-dags}
+      DESTINATION_PATH: ${DESTINATION_PATH:-/app/sync/}
+      INTERVAL: ${INTERVAL:-10} 
+      
 networks:
   data_network:
     driver: bridge
