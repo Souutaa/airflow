@@ -16,5 +16,5 @@ Power BI provided the final layer of visualization, offering insightful sales an
 ### Dashboard with Power BI
 ![image](https://github.com/user-attachments/assets/5be72d62-6aa3-44c5-ab8d-6001057d7434)
 
-![image](https://github.com/user-attachments/assets/7f9478a9-dc41-4573-bb89-3ecc1332b4ca)
+![image](https://github.com/user-attachments/assets/0527464a-c116-4582-8add-ab256ba685da)
 
