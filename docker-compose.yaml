@@ -76,6 +76,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+  env_file: .env
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -249,7 +250,7 @@ services:
     expose:
       - "5433"
     ports:
-      - "5433:5432"
+      - "5433:5432" 
     env_file: .env
     networks:
       - data_network
@@ -265,7 +266,7 @@ services:
       DIRECTORY_NAME: ${DIRECTORY_NAME:-dags}
       DESTINATION_PATH: ${DESTINATION_PATH:-/app/sync/}
       INTERVAL: ${INTERVAL:-10} 
-      
+
 networks:
   data_network:
     driver: bridge
