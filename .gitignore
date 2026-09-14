@@ -11,3 +11,7 @@ logs/
 
 .load_dataset_into_mysql/
 dataset/
+
+*.csv
+*.parquet
+*.sql
