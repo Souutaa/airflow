@@ -1,0 +1,29 @@
+-- Run as a PostgreSQL administrator on the server.
+-- Replace every REPLACE_* value before execution.
+-- This is a one-time bootstrap example and is not idempotent.
+
+\set ON_ERROR_STOP on
+
+CREATE ROLE airflow_meta
+    LOGIN
+    PASSWORD 'REPLACE_METADATA_PASSWORD';
+
+CREATE DATABASE airflow_metadata
+    OWNER airflow_meta
+    ENCODING 'UTF8';
+
+\connect airflow_metadata
+GRANT ALL ON SCHEMA public TO airflow_meta;
+
+CREATE ROLE airflow_warehouse
+    LOGIN
+    PASSWORD 'REPLACE_WAREHOUSE_PASSWORD';
+
+CREATE DATABASE ecommerce_dw
+    OWNER airflow_warehouse
+    ENCODING 'UTF8';
+
+\connect ecommerce_dw
+CREATE SCHEMA IF NOT EXISTS staging AUTHORIZATION airflow_warehouse;
+CREATE SCHEMA IF NOT EXISTS warehouse AUTHORIZATION airflow_warehouse;
+GRANT ALL ON SCHEMA public, staging, warehouse TO airflow_warehouse;

@@ -18,3 +18,27 @@ Power BI provided the final layer of visualization, offering insightful sales an
 
 ![image](https://github.com/user-attachments/assets/0527464a-c116-4582-8add-ab256ba685da)
 
+## Deployment
+
+The project uses one `docker-compose.yaml` for every environment. Airflow runs
+in Docker and connects to PostgreSQL/MySQL through their real private IP or DNS
+names; database containers are not part of this Compose project.
+
+Select the environment only through its env file:
+
+```bash
+# Development
+docker compose --env-file .env.dev up -d --wait
+
+# Production
+docker compose --env-file .env.prod up -d --wait
+```
+
+`.env.dev` and `.env.prod` must contain identical keys and differ only in
+values. Both files are ignored by Git. Use `.env.example` as the canonical
+schema and see `deployment/server/README.md` for database bootstrap, migration,
+verification, and rollback instructions.
+
+External databases use dynamic `AIRFLOW_CONNECTION_<ID>_*` component fields.
+Adding another database only requires adding its ID and fields to both env
+files; `docker-compose.yaml` remains unchanged.

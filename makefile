@@ -1,11 +1,32 @@
-to_mysql:
-	docker exec -it de_mysql mysql -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" ${MYSQL_DATABASE}
+ENV_FILE ?= .env.dev
+COMPOSE := docker compose --env-file $(ENV_FILE)
+AIRFLOW_EXEC := $(COMPOSE) exec -T airflow-scheduler /bin/bash /opt/airflow/scripts/airflow-entrypoint.sh
 
-to_mysql_root:
-	docker exec -it de_mysql mysql -u"root" -p"${MYSQL_ROOT_PASSWORD}" ${MYSQL_DATABASE}
+.PHONY: config build init up down ps logs verify
 
-mysql_create:
-	docker exec -it de_mysql mysql --local_infile -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" ${MYSQL_DATABASE} -e"source /tmp/load_dataset/mysql_datasource.sql"
+config:
+	$(COMPOSE) config --quiet
 
-mysql_load:
-	docker exec -it de_mysql mysql --local_infile -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" ${MYSQL_DATABASE} -e"source /tmp/load_dataset/mysql_load.sql"
+build:
+	$(COMPOSE) build
+
+init:
+	$(COMPOSE) up airflow-init
+
+up:
+	$(COMPOSE) up -d --wait
+
+down:
+	$(COMPOSE) down
+
+ps:
+	$(COMPOSE) ps
+
+logs:
+	$(COMPOSE) logs --tail 200
+
+verify:
+	$(AIRFLOW_EXEC) airflow version
+	$(AIRFLOW_EXEC) airflow config lint
+	$(AIRFLOW_EXEC) airflow db check
+	$(AIRFLOW_EXEC) airflow dags list-import-errors --output json

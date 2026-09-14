@@ -1,0 +1,13 @@
+*.log
+*.pyc
+
+.env
+.env.dev
+.env.prod
+.migration-backups/
+.migration-tools/
+__pycache__/
+logs/
+
+.load_dataset_into_mysql/
+dataset/

@@ -1,15 +1,13 @@
 from datetime import datetime, timedelta
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+
+from airflow.providers.standard.operators.python import PythonOperator
+from airflow.sdk import DAG
 
 # Định nghĩa default_args cho DAG
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2023, 1, 1),
-    'email': ['your_email@example.com'],
-    'email_on_failure': False,
-    'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
@@ -22,14 +20,14 @@ with DAG(
     dag_id='example_dag',
     default_args=default_args,
     description='Một DAG ví dụ để test git-sync',
-    schedule_interval='@daily',  # Chạy hàng ngày
-    catchup=False
+    schedule='@daily',  # Chạy hàng ngày
+    catchup=False,
 ) as dag:
 
     # Tạo một task đơn giản in ra "Hello World"
     task_hello_world = PythonOperator(
         task_id='hello_world_task',
-        python_callable=hello_world
+        python_callable=hello_world,
     )
 
     # Nếu có thêm task, bạn có thể tạo rồi xâu chuỗi như sau

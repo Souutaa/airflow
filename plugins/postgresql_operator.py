@@ -1,6 +1,5 @@
-from airflow.hooks.postgres_hook import PostgresHook
-import pandas as pd
-from sqlalchemy import create_engine
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+
 
 class PostgresOperators:
     def __init__(self, conn_id):
@@ -11,12 +10,18 @@ class PostgresOperators:
         return self.hook.get_conn()
 
     def get_data_to_pd(self, sql):
-        return self.hook.get_pandas_df(sql)
+        return self.hook.get_df(sql, df_type='pandas')
 
     def save_data_to_postgres(self, df, table_name, schema='public', if_exists='replace'):
-        conn = self.hook.get_uri()
-        engine = create_engine(conn)
-        df.to_sql(table_name, engine, schema=schema, if_exists=if_exists, index=False)
+        engine = self.hook.get_sqlalchemy_engine()
+        df.to_sql(
+            table_name,
+            engine,
+            schema=schema,
+            if_exists=if_exists,
+            index=False,
+            method='multi',
+        )
 
     def execute_query(self, sql):
         self.hook.run(sql)

@@ -1,0 +1,14 @@
+-- Run as a MySQL 8 administrator on the server.
+-- Replace the password and allowed source host before execution. The source
+-- host should be the Airflow server IP (or an appropriately restricted range)
+-- as seen by MySQL.
+
+CREATE DATABASE IF NOT EXISTS olist
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'airflow_source'@'REPLACE_WITH_ALLOWED_SOURCE_HOST'
+    IDENTIFIED BY 'REPLACE_SOURCE_PASSWORD';
+
+GRANT SELECT ON olist.* TO 'airflow_source'@'REPLACE_WITH_ALLOWED_SOURCE_HOST';
+FLUSH PRIVILEGES;
